@@ -53,7 +53,7 @@ export function Landing() {
               <div>
                 <p className="l-step-label">Conectás tu wallet</p>
                 <p className="l-step-desc">
-                  MetaMask en desktop, o <strong>Beexo</strong> desde mobile. DOCFlow lee tu balance DOC directo del contrato token — sin servidores, sin custodia.
+                  Abrís DOCFlow desde el navegador interno de <strong>Beexo</strong> y conectás tu cuenta Rootstock. La app lee tu balance DOC directo del contrato token — sin servidores, sin custodia.
                 </p>
               </div>
             </div>
@@ -72,7 +72,7 @@ export function Landing() {
               <div>
                 <p className="l-step-label">Constituís la posición</p>
                 <p className="l-step-desc">
-                  Con un click ejecutás el flujo real: ERC-20 approve al mercado kDOC de Tropykus, seguido del depósito. Dos firmas en MetaMask o Beexo, confirmadas on-chain.
+                  Con un click ejecutás el flujo real: ERC-20 approve al mercado kDOC de Tropykus, seguido del depósito. Dos firmas en Beexo, confirmadas on-chain.
                 </p>
               </div>
             </div>
@@ -106,9 +106,9 @@ export function Landing() {
             </div>
             <div className="l-card">
               <p className="l-card-label">Wallets</p>
-              <p className="l-card-value">MetaMask · Beexo</p>
+              <p className="l-card-value">Beexo</p>
               <p className="l-card-desc">
-                Desktop via MetaMask. Mobile via Beexo — la wallet de XO Labs con browser interno y soporte nativo para Rootstock.
+                Wallet de XO Labs con browser interno y soporte nativo para Rootstock. El flujo principal de DOCFlow está pensado para abrirse desde Beexo.
               </p>
             </div>
             <div className="l-card">

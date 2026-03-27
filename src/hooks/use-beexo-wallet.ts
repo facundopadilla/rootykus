@@ -16,12 +16,16 @@ declare global {
   }
 }
 
-/**
- * La app usa Beexo como única wallet.
- * Siempre retorna true — MetaMask ya no es una opción.
- */
 export function isBeexoContext(): boolean {
-  return true
+  if (typeof window === 'undefined') return false
+  if (window.XOConnect) return true
+
+  const walletParam = new URLSearchParams(window.location.search).get('wallet')
+  if (walletParam?.toLowerCase() === 'beexo') return true
+
+  if (typeof navigator === 'undefined') return false
+
+  return /XOLabs|BeexoWallet|XO\/\d/i.test(navigator.userAgent)
 }
 
 interface WalletSnapshot {
@@ -148,8 +152,13 @@ export function useBeexoWallet() {
       // Usamos XOConnect directamente para ver TODAS las currencies y encontrar RSK
       const { XOConnect } = await import('xo-connect')
       const client = await XOConnect.getClient()
+      const currencies = ((client?.currencies ?? []) as Array<{
+        id?: string
+        address?: string
+        chainId?: string | number
+      }>)
 
-      console.log('[DOCFlow] Client currencies:', JSON.stringify(client.currencies, null, 2))
+      console.log('[DOCFlow] Client currencies:', JSON.stringify(currencies, null, 2))
 
       // Buscamos la dirección RSK con múltiples estrategias de chainId
       // Beexo mainnet usa "0x1e" (30 decimal), pero también intentamos fallbacks
@@ -157,10 +166,10 @@ export function useBeexoWallet() {
       let account: string | null = null
 
       // Estrategia 1: buscar por chainId exacto (hex o decimal)
-      for (const c of client.currencies) {
+      for (const c of currencies) {
         const cid = String(c.chainId ?? '').toLowerCase()
         if (RSK_CHAIN_IDS.map(x => x.toLowerCase()).includes(cid) && c.address) {
-          account = c.address
+          account = c.address ?? null
           console.log('[DOCFlow] Cuenta RSK encontrada por chainId:', cid, account)
           break
         }
@@ -168,9 +177,9 @@ export function useBeexoWallet() {
 
       // Estrategia 2: buscar por id de currency que contenga "rootstock"
       if (!account) {
-        for (const c of client.currencies) {
+        for (const c of currencies) {
           if (String(c.id ?? '').toLowerCase().includes('rootstock') && c.address) {
-            account = c.address
+            account = c.address ?? null
             console.log('[DOCFlow] Cuenta RSK encontrada por currency id:', c.id, account)
             break
           }
@@ -179,17 +188,17 @@ export function useBeexoWallet() {
 
       // Estrategia 3: tomar la primera EVM address disponible (todas comparten dirección en EVM)
       if (!account) {
-        const evmCurrency = client.currencies.find(c =>
+        const evmCurrency = currencies.find(c =>
           c.address && /^0x[0-9a-fA-F]{40}$/.test(c.address)
         )
         if (evmCurrency) {
-          account = evmCurrency.address
+          account = evmCurrency.address ?? null
           console.log('[DOCFlow] Cuenta EVM fallback:', evmCurrency.id, account)
         }
       }
 
       if (!account) {
-        throw new Error(`Beexo no tiene una cuenta EVM. Currencies: ${client.currencies.map(c => c.id).join(', ')}`)
+        throw new Error(`Beexo no tiene una cuenta EVM. Currencies: ${currencies.map(c => c.id).join(', ')}`)
       }
 
       await syncAccountState(account, ROOTSTOCK_CHAIN_ID_HEX, provider)
@@ -268,7 +277,7 @@ export function useBeexoWallet() {
     () => ({
       isConnected: Boolean(wallet.account),
       isOnRootstock: isRootstockChain(wallet.chainId),
-      isBeexo: true,
+      isBeexo: isBeexoContext(),
     }),
     [wallet.account, wallet.chainId],
   )

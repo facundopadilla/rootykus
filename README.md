@@ -146,8 +146,7 @@ Esto no es una recomendación financiera. Es una política de demo razonable par
 
 - **Node.js 20+** recomendado
 - **pnpm** recomendado (aunque podés usar npm si preferís)
-- wallet compatible con Rootstock Testnet
-- idealmente **Beexo** para el flujo principal del proyecto
+- **Beexo** con browser interno para abrir la app y firmar transacciones en Rootstock Testnet
 
 ## Instalación
 
@@ -250,7 +249,7 @@ docflow/
 Si querés llevarlo de demo a producto más serio, los siguientes pasos razonables serían:
 
 - parametrizar contratos/red por entorno
-- agregar soporte explícito para más wallets EVM
+- evaluar si conviene reintroducir soporte explícito para más wallets EVM
 - extraer configuración a variables `VITE_*`
 - agregar analítica de uso
 - incorporar estados de error más finos para transacciones rechazadas/fallidas
